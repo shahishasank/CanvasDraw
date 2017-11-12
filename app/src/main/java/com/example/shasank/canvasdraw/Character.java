@@ -12,25 +12,26 @@ import java.lang.reflect.Field;
 
 class Character {
     private int angle;
-    private int theta;
     private boolean rotate;
     private float y;
     private float x;
     private Bitmap[] image;
     private int imageIndex;
+    private int displayWidth,displayHeight;
 
-    Character(Context c, int t, int l, int characterCode) {
+    Character(Context c, int displayHeight, int displayWidth, int characterCode) {
+        this.displayHeight=displayHeight;
+        this.displayWidth=displayWidth;
         int j = 0;
         angle = 200;
-        theta = 400;
         imageIndex = 0;
         image = new Bitmap[7];
         for (char i = 'a'; i <= 'g'; i++, j++) {
             String id = i + String.valueOf(characterCode);
             image[j] = BitmapFactory.decodeResource(c.getResources(), getResId(id, R.drawable.class));
         }
-        y = t / 2;
-        x = l / 2;
+        y = displayHeight / 2;
+        x = displayWidth / 2;
     }
 
     private static int getResId(String resName, Class<?> c) {
@@ -53,7 +54,7 @@ class Character {
 
         Paint p = new Paint();
         p.setColor(Color.WHITE);
-        canvas.drawText(String.valueOf(theta) + "=" + String.valueOf(x) + "," + String.valueOf(y), 100, 100, p);
+        canvas.drawText(String.valueOf(x) + "," + String.valueOf(y), 100, 25, p);
     }
 
     void update(long waitTime) {
@@ -61,7 +62,6 @@ class Character {
             imageIndex++;
             if (imageIndex == 7)
                 imageIndex = 1;
-            setXY();
         }
         if (angle == 200)
             imageIndex = 0;
@@ -81,12 +81,23 @@ class Character {
         return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
     }
 
-    private void setXY() {
-        theta=-angle;
-        theta = theta < 0 ? 360 + theta : theta;
-        float cosTheta = 20 * (float) Math.cos(Math.toRadians(theta));
-        float sinTheta = 20 * (float) Math.sin(Math.toRadians(theta));
+    void setX(float cosTheta){
         x+=cosTheta;
-        y+=sinTheta;
+        if(x<0)
+            x=0;
+        if(x>displayWidth)
+            x=displayWidth;
     }
+    void setY(float sinTheta){
+        y+=sinTheta;
+        if(y<0)
+            y=0;
+        if(y>displayHeight)
+            y=displayHeight;
+    }
+    float getX(){return x;}
+    float getY(){return y;}
+
+
+
 }
