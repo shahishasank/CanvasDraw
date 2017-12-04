@@ -14,54 +14,50 @@ import android.view.SurfaceView;
 
 class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback {
     Bitmap controller;
-    Bitmap background;
     Bitmap gameBackground;
     private float backgroundX, backgroundY;
     private final int controllerMoveX, controllerMoveY;
     int startX = 1, startY = 1;
-    int displayHeight, displayWidth;
-    Rect gameController, controllerImage, gameRect, backReact;
+    int displayHeight;
+    int displayWidth;
+    Rect gameController, controllerRect, gameRect, backReact;
     int controlAngle = 200;
     ControlThread controlThread;
     Character character;
 
     public MySurfaceView(Context context) {
         super(context);
-        displayWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
-        displayHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
+        displayHeight=Resources.getSystem().getDisplayMetrics().heightPixels;
+        displayWidth=Resources.getSystem().getDisplayMetrics().widthPixels;
         controllerMoveX = displayWidth * 3 / 100;
         controllerMoveY = displayHeight * 3 / 100;
         this.setFocusable(true);
         this.getHolder().addCallback(this);
         controller = BitmapFactory.decodeResource(getResources(), R.drawable.inactive);
-        background = BitmapFactory.decodeResource(getResources(), R.drawable.back);
-        gameBackground = Bitmap.createScaledBitmap(background, displayWidth * 2, displayHeight * 2, false);
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.back);
+        gameBackground = Bitmap.createScaledBitmap(bitmap, displayWidth * 2, displayHeight * 2, false);
         character = new Character(context, displayHeight, displayWidth, 0);
         controlThread = new ControlThread(this, this.getHolder());
         controlThread.setRunningStatus(false);
-        controllerImage = new Rect(0, 0, controller.getWidth(), controller.getHeight());
+        controllerRect = new Rect(0, 0, controller.getWidth(), controller.getHeight());
         int l = displayWidth * 5 / 100,
                 r = displayWidth * 15 / 100,
                 t = displayHeight * 75 / 100,
                 b = displayHeight * 9 / 10;
         gameController = new Rect(l, t, r, b);
         gameRect = new Rect(0, 0, displayWidth, displayHeight);
-        backReact = new Rect(0, 0, background.getWidth(), background.getHeight());
+        backReact = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
         backgroundX = displayWidth / 2;
         backgroundY = displayHeight / 2;
     }
-
-
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         Thread t = new Thread(controlThread);
         t.start();
     }
-
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
     }
-
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
         boolean retry = true;
@@ -75,16 +71,16 @@ class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback {
             retry = false;
         }
     }
-
     @Override
     public void draw(Canvas canvas) {
         super.draw(canvas);
         canvas.drawBitmap(gameBackground, -1 * backgroundX, -1 * backgroundY, null);
         character.draw(canvas);
-        canvas.drawBitmap(controller, controllerImage, gameController, null);
+        canvas.drawBitmap(controller, controllerRect, gameController, null);
         Paint p = new Paint();
         p.setColor(Color.WHITE);
         canvas.drawText(String.valueOf(backgroundX) + "," + String.valueOf(backgroundY), 100, 100, p);
+
     }
 
 
@@ -186,8 +182,7 @@ class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     public boolean backgroundEndY() {
-        boolean flag;
-        flag = !(backgroundY >= 0 && backgroundY <= displayHeight);
+        boolean flag = !(backgroundY >= 0 && backgroundY <= displayHeight);
         if (character.getY() >= displayHeight / 2 && backgroundY < 0)
             backgroundY = 0;
         if (character.getY() <= displayHeight / 2 && backgroundY > displayHeight)

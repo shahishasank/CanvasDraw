@@ -4,9 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Matrix;
-import android.graphics.Paint;
 
 import java.lang.reflect.Field;
 
@@ -30,8 +28,8 @@ class Character {
             String id = i + String.valueOf(characterCode);
             image[j] = BitmapFactory.decodeResource(c.getResources(), getResId(id, R.drawable.class));
         }
-        y = displayHeight / 2;
         x = displayWidth / 2;
+        y = displayHeight/2;
     }
 
     private static int getResId(String resName, Class<?> c) {
@@ -51,10 +49,6 @@ class Character {
             canvas.drawBitmap(RotateBitmap(image[imageIndex]), x, y, null);
         else
             canvas.drawBitmap(image[imageIndex], x, y, null);
-
-        Paint p = new Paint();
-        p.setColor(Color.WHITE);
-        canvas.drawText(String.valueOf(x) + "," + String.valueOf(y), 100, 25, p);
     }
 
     void update(long waitTime) {
@@ -85,15 +79,15 @@ class Character {
         x+=cosTheta;
         if(x<0)
             x=0;
-        if(x>displayWidth)
-            x=displayWidth;
+        if(x>displayWidth-image[0].getWidth())
+            x=displayWidth-image[0].getWidth();
     }
     void setY(float sinTheta){
         y+=sinTheta;
         if(y<0)
             y=0;
-        if(y>displayHeight)
-            y=displayHeight;
+        if(y>displayHeight-image[0].getHeight())
+            y=displayHeight-image[0].getHeight()-1;
     }
     float getX(){return x;}
     float getY(){return y;}
